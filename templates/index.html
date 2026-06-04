@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>课程提醒</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- 顶部标题栏 -->
+    <header class="header">
+        <h1 class="header-title">📚 课程提醒</h1>
+        <div class="header-info">
+            <span id="currentTime">--:--</span>
+            <span id="currentDay">---</span>
+        </div>
+    </header>
+
+    <!-- 提醒状态指示器 -->
+    <div class="status-bar" id="statusBar">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">初始化中...</span>
+    </div>
+
+    <!-- 标签页切换 -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="today">📅 今日课程</button>
+        <button class="tab-btn" data-tab="manage">⚙️ 课程管理</button>
+        <button class="tab-btn" data-tab="settings">🔔 提醒设置</button>
+    </nav>
+
+    <!-- ====== 今日课程面板 ====== -->
+    <section class="tab-panel active" id="panel-today">
+        <div id="todayCourseList" class="course-list">
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <p>今天没有课程</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 课程管理面板 ====== -->
+    <section class="tab-panel" id="panel-manage">
+        <!-- 添加/编辑表单 -->
+        <div class="card" id="courseFormCard">
+            <h2 class="card-title" id="formTitle">➕ 添加课程</h2>
+            <form id="courseForm">
+                <input type="hidden" id="editId" value="">
+
+                <div class="form-row">
+                    <div class="form-group flex-2">
+                        <label for="courseName">课程名称 *</label>
+                        <input type="text" id="courseName" placeholder="如：高等数学" required>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="teacher">教师</label>
+                        <input type="text" id="teacher" placeholder="如：张老师">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="classroom">教室 *</label>
+                    <input type="text" id="classroom" placeholder="如：教学楼A-301" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="dayOfWeek">星期 *</label>
+                        <select id="dayOfWeek" required>
+                            <option value="">请选择</option>
+                            <option value="1">周一</option>
+                            <option value="2">周二</option>
+                            <option value="3">周三</option>
+                            <option value="4">周四</option>
+                            <option value="5">周五</option>
+                            <option value="6">周六</option>
+                            <option value="7">周日</option>
+                        </select>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="weeksPattern">周次</label>
+                        <select id="weeksPattern">
+                            <option value="every">每周</option>
+                            <option value="odd">单周</option>
+                            <option value="even">双周</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label for="startTime">上课时间 *</label>
+                        <input type="time" id="startTime" required>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label for="endTime">下课时间 *</label>
+                        <input type="time" id="endTime" required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEditBtn" style="display:none">取消编辑</button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">💾 保存课程</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 课程列表 -->
+        <div class="card">
+            <h2 class="card-title">📋 全部课程</h2>
+            <div id="allCourseList" class="course-list-compact">
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>还没有添加课程</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== 提醒设置面板 ====== -->
+    <section class="tab-panel" id="panel-settings">
+        <div class="card">
+            <h2 class="card-title">🔔 提醒方式</h2>
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-icon">💬</span>
+                    <span>消息弹窗</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="notifyEnabled" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-icon">🔊</span>
+                    <span>语音播报</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="voiceEnabled" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">⏰ 提醒时间</h2>
+            <div class="setting-row">
+                <div class="setting-label">
+                    <span class="setting-icon">🕐</span>
+                    <span>提前提醒</span>
+                </div>
+                <select id="remindMinutes" class="setting-select">
+                    <option value="5">5 分钟</option>
+                    <option value="10">10 分钟</option>
+                    <option value="15" selected>15 分钟</option>
+                    <option value="20">20 分钟</option>
+                    <option value="30">30 分钟</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">🔊 语音测试</h2>
+            <div class="setting-row">
+                <button class="btn btn-secondary" id="testVoiceBtn">🎤 测试语音播报</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Toast 提示容器 -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

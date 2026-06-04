@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+courses.db
+test_seed.py
+seed_data.py
+check_db.py
+test_api.py
+login_page.html
+verify.txt
+output_test.txt
